@@ -413,6 +413,8 @@ class ActionServer(Waitable):
     async def _execute_expire_goals(self, expired_goals):
         for goal in expired_goals:
             goal_uuid = bytes(goal.goal_id.uuid)
+            if not self._result_futures[goal_uuid].done():
+                continue
             self._goal_handles[goal_uuid].destroy()
             del self._goal_handles[goal_uuid]
             self.remove_future(self._result_futures[goal_uuid])
